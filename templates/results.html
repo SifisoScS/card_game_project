@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="results">
+    <h2>Game Results</h2>
+    
+    <div class="players-list">
+        <h3>Players and Scores:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Cards</th>
+                    <th>Score</th>
+                    <th>Suit Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in players %}
+                <tr>
+                    <td>{{ player.name }}</td>
+                    <td>{{ player.cards|join(', ') }}</td>
+                    <td>{{ player.score }}</td>
+                    <td>{{ player.suit_score }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="winner">
+        <h3>Winner(s):</h3>
+        {% if winners %}
+            <p>
+                {% for winner in winners %}
+                    {{ winner.name }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+                with score {{ winners[0].score }}
+            </p>
+        {% else %}
+            <p>No winners determined.</p>
+        {% endif %}
+    </div>
+    
+    <a href="{{ url_for('play') }}" class="btn">Play Again</a>
+</div>
+{% endblock %}

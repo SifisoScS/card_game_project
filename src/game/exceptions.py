@@ -1,2 +1,0 @@
-class GameError(Exception):
-    pass
