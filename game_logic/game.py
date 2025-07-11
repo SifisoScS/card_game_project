@@ -1,3 +1,4 @@
+import logging
 import random
 from .player import Player
 
@@ -21,7 +22,7 @@ class Game:
         """Deal a specified number of cards to each player."""
         if not self.deck:
             self.deck = self.create_deck()
-            self.shuffle_deck()
+        self.shuffle_deck()  # Shuffle before dealing to ensure randomness
         
         if len(self.deck) < len(players) * cards_per_player:
             raise ValueError("Not enough cards in the deck to deal.")
@@ -52,7 +53,7 @@ class Game:
             
             return potential_winners
         except ValueError as e:
-            print(f"Error determining winners: {e}")
+            logging.warning(f"Error determining winners: {e}")
             return []
 
     def reset_round(self):
