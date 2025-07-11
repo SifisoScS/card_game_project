@@ -122,6 +122,83 @@
             font-weight: bold;
         }
 
+        /* Background playing cards */
+        .bg-card {
+            position: absolute;
+            width: 60px;
+            height: 90px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px;
+            opacity: 0.7;
+            z-index: 0;
+            transition: all 5s ease;
+        }
+
+        .bg-card:hover {
+            opacity: 0.9;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .bg-card .top-value, .bg-card .bottom-value {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .bg-card .bottom-value {
+            transform: rotate(180deg);
+        }
+
+        .bg-card .suit {
+            font-size: 24px;
+            text-align: center;
+            margin: auto 0;
+        }
+
+        .bg-card.hearts, .bg-card.diamonds {
+            color: red;
+        }
+
+        .bg-card.spades, .bg-card.clubs {
+            color: black;
+        }
+
+        /* Position the background cards */
+        .bg-card:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            transform: rotate(-15deg);
+        }
+        .bg-card:nth-child(2) {
+            top: 70%;
+            left: 10%;
+            transform: rotate(10deg);
+        }
+        .bg-card:nth-child(3) {
+            top: 30%;
+            right: 5%;
+            transform: rotate(5deg);
+        }
+        .bg-card:nth-child(4) {
+            bottom: 10%;
+            right: 8%;
+            transform: rotate(-10deg);
+        }
+        .bg-card:nth-child(5) {
+            top: 50%;
+            left: 20%;
+            transform: rotate(-5deg);
+        }
+        .bg-card:nth-child(6) {
+            top: 20%;
+            right: 20%;
+            transform: rotate(15deg);
+        }
+
         @media (max-width: 600px) {
             .welcome {
                 padding: 20px;
@@ -145,10 +222,55 @@
                 width: 48px;
                 height: 72px;
             }
+
+            .bg-card {
+                width: 40px;
+                height: 60px;
+            }
+
+            .bg-card .top-value, .bg-card .bottom-value {
+                font-size: 10px;
+            }
+
+            .bg-card .suit {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Background playing cards -->
+    <div class="bg-card hearts">
+        <div class="top-value">A</div>
+        <div class="suit">♥</div>
+        <div class="bottom-value">A</div>
+    </div>
+    <div class="bg-card spades">
+        <div class="top-value">K</div>
+        <div class="suit">♠</div>
+        <div class="bottom-value">K</div>
+    </div>
+    <div class="bg-card diamonds">
+        <div class="top-value">Q</div>
+        <div class="suit">♦</div>
+        <div class="bottom-value">Q</div>
+    </div>
+    <div class="bg-card clubs">
+        <div class="top-value">J</div>
+        <div class="suit">♣</div>
+        <div class="bottom-value">J</div>
+    </div>
+    <div class="bg-card hearts">
+        <div class="top-value">10</div>
+        <div class="suit">♥</div>
+        <div class="bottom-value">10</div>
+    </div>
+    <div class="bg-card diamonds">
+        <div class="top-value">9</div>
+        <div class="suit">♦</div>
+        <div class="bottom-value">9</div>
+    </div>
+
     <div class="welcome">
         <div class="card-deck">
             <div class="card"><div class="card-back">S</div></div>

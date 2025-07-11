@@ -3,20 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card Game</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>{% block title %}Sifiso Card Game{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    {% block head %}{% endblock %}
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Card Game</h1>
-        </header>
-        <main>
-            {% block content %}{% endblock %}
-        </main>
-        <footer>
-            <p>Card Game &copy; 2023</p>
-        </footer>
-    </div>
+<body class="bg-gradient-to-b from-[#1a3c34] to-[#2e6b5b] min-h-screen flex flex-col font-orbitron text-white">
+    {% block content %}{% endblock %}
 </body>
 </html>

@@ -1,3 +1,5 @@
+import logging
+
 class Player:
     def __init__(self, name, cards=None):
         """Initialize a player with a name and optional list of cards."""
@@ -20,7 +22,7 @@ class Player:
         
         for card in self.cards:
             if not isinstance(card, tuple) or len(card) != 2:
-                print(f"Invalid card format for player {self.name}: {card}")
+                logging.warning(f"Invalid card format for player {self.name}: {card}")
                 continue
                 
             face_value, suit = card
@@ -43,9 +45,10 @@ class Player:
             value = int(face_value)
             if 2 <= value <= 10:
                 return value
+            logging.warning(f"Invalid face value for player {self.name}: {face_value}")
             return 0
         except ValueError:
-            print(f"Invalid face value for player {self.name}: {face_value}")
+            logging.warning(f"Invalid face value for player {self.name}: {face_value}")
             return 0
 
     def get_suit_value_score(self, suit):
@@ -63,4 +66,4 @@ class Player:
             self.cards.append(card)
             self.calculate_score()
         else:
-            print(f"Cannot add invalid card to {self.name}'s hand: {card}")
+            logging.warning(f"Cannot add invalid card to {self.name}'s hand: {card}")
