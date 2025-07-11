@@ -1,47 +1,148 @@
-{% extends "base.html" %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Results - Sifiso Card Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #1a3c34 0%, #2e6b5b 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
 
-{% block content %}
-<div class="results">
-    <h2>Game Results</h2>
-    
-    <div class="players-list">
-        <h3>Players and Scores:</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Player</th>
-                    <th>Cards</th>
-                    <th>Score</th>
-                    <th>Suit Score</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for player in players %}
-                <tr>
-                    <td>{{ player.name }}</td>
-                    <td>{{ player.cards|join(', ') }}</td>
-                    <td>{{ player.score }}</td>
-                    <td>{{ player.suit_score }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="winner">
-        <h3>Winner(s):</h3>
-        {% if winners %}
-            <p>
+        .results-container {
+            max-width: 4xl;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/woven-light.png');
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .card {
+            width: 60px;
+            height: 84px;
+            background: #fff;
+            border: 2px solid #d4a017;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.1);
+        }
+
+        .card-value {
+            font-size: 1rem;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+        }
+
+        .card-suit {
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .card.h .card-value, .card.d .card-value { color: #c8102e; }
+        .card.c .card-value, .card.s .card-value { color: #000; }
+    </style>
+</head>
+<body>
+    <div class="results-container">
+        <h2 class="text-4xl font-extrabold text-[#d4a017] mb-8 text-center drop-shadow-[0_0_15px_rgba(212,160,23,0.8)] select-none flex items-center justify-center gap-3">
+            <i class="fas fa-trophy text-[#d4a017]"></i> Game Results
+        </h2>
+
+        <div class="players-list mb-10 overflow-x-auto">
+            <h3 class="text-2xl font-semibold text-[#d4a017] mb-4 select-none flex items-center gap-2">
+                <i class="fas fa-users text-[#d4a017]"></i> Players and Scores
+            </h3>
+            <table class="min-w-full border-collapse border border-[#d4a017] rounded-lg overflow-hidden shadow-lg">
+                <thead class="bg-[#d4a017]/20">
+                    <tr>
+                        <th class="text-left py-3 px-5 font-semibold text-white border-r border-[#b38b14]">Player</th>
+                        <th class="text-left py-3 px-5 font-semibold text-white border-r border-[#b38b14]">Cards</th>
+                        <th class="text-center py-3 px-5 font-semibold text-white border-r border-[#b38b14]">Score</th>
+                        <th class="text-center py-3 px-5 font-semibold text-white">Suit Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in players %}
+                    <tr class="even:bg-gray-800/50 odd:bg-gray-900/40 hover:bg-[#d4a017]/20 transition-colors">
+                        <td class="py-3 px-5 border-r border-[#b38b14] font-semibold text-white">{{ player.name }}</td>
+                        <td class="py-3 px-5 border-r border-[#b38b14]">
+                            <div class="flex gap-2">
+                                {% for card in player.cards %}
+                                <div class="card {{ card[1]|lower }}">
+                                    <span class="card-value">{{ card[0] }}</span>
+                                    <span class="card-suit">
+                                        {% if card[1] == 'H' %}<span class="text-[#c8102e]">♥</span>
+                                        {% elif card[1] == 'D' %}<span class="text-[#c8102e]">♦</span>
+                                        {% elif card[1] == 'C' %}<span class="text-black">♣</span>
+                                        {% else %}<span class="text-black">♠</span>{% endif %}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="py-3 px-5 border-r border-[#b38b14] text-center font-bold text-[#d4a017]">{{ player.score }}</td>
+                        <td class="py-3 px-5 text-center font-semibold text-white">{{ player.suit_score }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="winner mb-10 text-center">
+            <h3 class="text-3xl font-extrabold text-[#d4a017] mb-4 select-none flex items-center justify-center gap-3">
+                <i class="fas fa-crown text-[#d4a017]"></i> Winner(s)
+            </h3>
+            {% if winners %}
+            <p class="text-xl text-white font-semibold tracking-wide">
                 {% for winner in winners %}
-                    {{ winner.name }}{% if not loop.last %}, {% endif %}
+                    <span class="inline-block px-3 py-1 rounded-full bg-[#d4a017]/20 text-[#d4a017] mr-2 mb-2 select-text">{{ winner.name }}</span>
                 {% endfor %}
-                with score {{ winners[0].score }}
+                <br>
+                <span class="block mt-2 text-[#d4a017] font-bold text-2xl">with score {{ winners[0].score }}</span>
             </p>
-        {% else %}
-            <p>No winners determined.</p>
-        {% endif %}
+            {% else %}
+            <p class="text-gray-200 italic">No winners determined.</p>
+            {% endif %}
+        </div>
+
+        <div class="text-center">
+            <a href="{{ url_for('play') }}" class="inline-block bg-[#d4a017] hover:bg-[#e6b800] active:bg-[#b38b14] text-black font-extrabold py-3 px-10 rounded-xl shadow-lg transition transform hover:-translate-y-1 select-none">
+                <i class="fas fa-redo-alt mr-2"></i> Play Again
+            </a>
+        </div>
     </div>
-    
-    <a href="{{ url_for('play') }}" class="btn">Play Again</a>
-</div>
-{% endblock %}
+</body>
+</html>

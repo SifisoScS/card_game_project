@@ -1,446 +1,221 @@
-{% extends "base.html" %}
-
-{% block content %}
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sifiso Card Game - Play</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background: url('https://www.transparenttextures.com/patterns/wood-pattern.png') repeat, radial-gradient(circle, #1a3c34, #0a1c17);
+            background: linear-gradient(135deg, #1a3c34 0%, #2e6b5b 100%);
+            font-family: 'Orbitron', sans-serif;
             color: #fff;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
         }
 
         .game-container {
-            max-width: 1200px;
-            width: 95%;
-            background: rgba(0, 0, 0, 0.85);
-            border: 4px solid #d4a017;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 0 30px rgba(212, 160, 23, 0.5);
+            max-width: 7xl;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
             position: relative;
+            overflow: hidden;
         }
 
-        .table-felt {
-            background: radial-gradient(ellipse at center, #2e6b5b, #1a3c34);
-            border-radius: 15px;
-            padding: 20px;
-            position: relative;
-            border: 2px solid #b38b14;
-        }
-
-        h2 {
-            font-size: 3rem;
-            font-weight: bold;
-            text-align: center;
-            color: #d4a017;
-            text-shadow: 0 0 10px rgba(212, 160, 23, 0.8);
-            margin-bottom: 10px;
-        }
-
-        p {
-            font-size: 1.2rem;
-            text-align: center;
-            color: #e0e0e0;
-            margin-bottom: 20px;
-        }
-
-        .players-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .player-card {
-            background: rgba(30, 30, 30, 0.9);
-            border-radius: 15px;
-            padding: 15px;
-            width: 300px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-        }
-
-        .player-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .player-card h3 {
-            font-size: 1.5rem;
-            color: #fff;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #d4a017;
-            border-radius: 8px;
-            background: #2e2e2e;
-            color: #fff;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        input[type="text"]:focus {
-            border-color: #e6b800;
-            outline: none;
-        }
-
-        .hand-of-cards {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            perspective: 1000px;
-        }
-
-        .card-slot {
-            width: 60px;
-            height: 90px;
-            background: transparent;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .card-slot:hover {
-            transform: translateZ(10px);
-        }
-
-        .card-back {
+        .game-container::before {
+            content: '';
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, #b22222, #8b0000);
-            border: 2px solid #fff;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: #fff;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-            transition: transform 0.5s ease;
+            background: url('https://www.transparenttextures.com/patterns/woven-light.png');
+            opacity: 0.1;
+            z-index: -1;
         }
 
-        .card-selected {
-            background: linear-gradient(45deg, #fff, #f0f0f0);
-            color: #000;
-        }
-
-        .card-selected .card-value {
-            font-size: 1rem;
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            color: inherit;
-        }
-
-        .card-selected .card-suit {
-            font-size: 1.5rem;
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-        }
-
-        .hidden-select {
-            display: none;
-        }
-
-        .btn-add-player, .btn-submit {
-            padding: 12px 24px;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-add-player {
-            background: #1e90ff;
-        }
-
-        .btn-submit {
-            background: #d4a017;
-        }
-
-        .btn-add-player:hover {
-            background: #00b7eb;
-            transform: translateY(-2px);
-        }
-
-        .btn-submit:hover {
-            background: #e6b800;
-            transform: translateY(-2px);
-        }
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: #fff;
-            border-radius: 15px;
-            padding: 20px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 0 20px rgba(212, 160, 23, 0.5);
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.5rem;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .card-choices {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 10px;
-        }
-
-        .card-option {
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .card-option:hover {
-            transform: scale(1.1);
-        }
-
-        .card-preview {
+        .card {
             width: 80px;
-            height: 120px;
-            border: 2px solid #ccc;
-            border-radius: 8px;
+            height: 112px;
+            background: #fff;
+            border: 3px solid #d4a017;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: space-between;
-            padding: 5px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            padding: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s ease;
+            position: relative;
+            animation: dealCard 0.6s ease-out forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) rotate(3deg);
         }
 
         .card-value {
             font-size: 1.2rem;
             font-weight: bold;
+            font-family: 'Georgia', serif;
         }
 
         .card-suit {
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .card.h .card-value, .card.d .card-value { color: #c8102e; }
+        .card.c .card-value, .card.s .card-value { color: #000; }
+
+        .card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #d4a017, #b38b14);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 2rem;
+            color: #fff;
+            font-weight: bold;
+            opacity: 1;
+            transition: opacity 0.3s ease;
         }
 
-        .card-preview.h, .card-preview.d .card-value, .card-preview.d .card-suit {
-            color: #b22222;
-        }
+        .card.flipped .card-back { opacity: 0; }
+        .card.flipped .card-front { opacity: 1; }
 
-        .card-preview.c, .card-preview.s .card-value, .card-preview.s .card-suit {
-            color: #000;
-        }
-
-        @media (max-width: 768px) {
-            .player-card {
-                width: 100%;
-            }
-
-            .card-slot {
-                width: 50px;
-                height: 75px;
-            }
-
-            .card-preview {
-                width: 60px;
-                height: 90px;
-            }
+        @keyframes dealCard {
+            from { transform: translateY(-100vh) rotate(15deg); opacity: 0; }
+            to { transform: translateY(0) rotate(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <div class="table-felt">
-            <h2>🃏 Sifiso Card Showdown</h2>
-            <p>Strategize, select your cards, and claim victory in this thrilling South African game!</p>
-            <div id="players-container" class="players-container">
-                <!-- Player 1 -->
-                <div class="player-card">
-                    <h3>👤 Player 1</h3>
-                    <input type="text" name="player1_name" placeholder="Enter Name" required>
-                    <div class="hand-of-cards">
-                        {% for i in range(5) %}
-                        <div class="card-slot" data-player="1" data-slot="{{i}}">
+        <header class="mb-10 text-center">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-[#d4a017] drop-shadow-[0_0_10px_rgba(212,160,23,0.7)] flex items-center justify-center gap-3 select-none">
+                <i class="fas fa-heart text-[#c8102e]"></i> Sifiso Card Showdown
+            </h1>
+            <p class="mt-3 text-gray-200 text-lg md:text-xl max-w-xl mx-auto font-semibold tracking-wide">
+                Proudly South African! Enter player names to deal the cards and compete for victory.
+            </p>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-6 bg-[#c8102e] border border-red-500 rounded-lg py-3 px-5 text-center text-white font-semibold shadow-lg animate-pulse">
+                        <i class="fas fa-exclamation-triangle mr-2"></i> {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('play') }}" method="POST" class="w-full">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Player 1 (Required) -->
+                <div class="player-card bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-[#d4a017] rounded-2xl p-6 shadow-lg hover:shadow-[#d4a017] transition-transform transform hover:-translate-y-1">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center justify-center gap-2 text-[#d4a017] select-none">
+                        <i class="fas fa-user fa-lg"></i> Player 1
+                    </h3>
+                    <input class="w-full rounded-lg bg-gray-700 border border-gray-600 focus:border-[#d4a017] focus:ring-2 focus:ring-[#d4a017] text-white px-4 py-3 placeholder-gray-400 font-semibold transition" name="player1_name" placeholder="Enter Name" required type="text">
+                </div>
+                <!-- Player 2 (Required) -->
+                <div class="player-card bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-[#d4a017] rounded-2xl p-6 shadow-lg hover:shadow-[#d4a017] transition-transform transform hover:-translate-y-1">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center justify-center gap-2 text-[#d4a017] select-none">
+                        <i class="fas fa-user fa-lg"></i> Player 2
+                    </h3>
+                    <input class="w-full rounded-lg bg-gray-700 border border-gray-600 focus:border-[#d4a017] focus:ring-2 focus:ring-[#d4a017] text-white px-4 py-3 placeholder-gray-400 font-semibold transition" name="player2_name" placeholder="Enter Name" required type="text">
+                </div>
+                <!-- Player 3 (Optional) -->
+                <div class="player-card hidden bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-[#d4a017] rounded-2xl p-6 shadow-lg hover:shadow-[#d4a017] transition-transform transform hover:-translate-y-1" id="player3-card">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center justify-center gap-2 text-[#d4a017] select-none">
+                        <i class="fas fa-user fa-lg"></i> Player 3
+                    </h3>
+                    <input class="w-full rounded-lg bg-gray-700 border border-gray-600 focus:border-[#d4a017] focus:ring-2 focus:ring-[#d4a017] text-white px-4 py-3 placeholder-gray-400 font-semibold transition" name="player3_name" placeholder="Enter Name" type="text">
+                </div>
+                <!-- Player 4 (Optional) -->
+                <div class="player-card hidden bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-[#d4a017] rounded-2xl p-6 shadow-lg hover:shadow-[#d4a017] transition-transform transform hover:-translate-y-1" id="player4-card">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center justify-center gap-2 text-[#d4a017] select-none">
+                        <i class="fas fa-user fa-lg"></i> Player 4
+                    </h3>
+                    <input class="w-full rounded-lg bg-gray-700 border border-gray-600 focus:border-[#d4a017] focus:ring-2 focus:ring-[#d4a017] text-white px-4 py-3 placeholder-gray-400 font-semibold transition" name="player4_name" placeholder="Enter Name" type="text">
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-center gap-6 mt-10">
+                <button type="button" id="add-player" class="btn-add-player flex items-center justify-center gap-2 bg-[#d4a017] hover:bg-[#e6b800] active:bg-[#b38b14] text-black font-extrabold py-3 px-6 rounded-xl shadow-lg transition transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-user-plus"></i> Add Player (Max 4)
+                </button>
+                <button type="submit" class="btn-submit flex items-center justify-center gap-2 bg-[#d4a017] hover:bg-[#e6b800] active:bg-[#b38b14] text-black font-extrabold py-3 px-8 rounded-xl shadow-lg transition transform hover:-translate-y-1">
+                    <i class="fas fa-gamepad"></i> Deal Cards
+                </button>
+            </div>
+        </form>
+
+        {% if players %}
+        <section class="mt-16 max-w-7xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-center text-[#d4a017] drop-shadow-[0_0_15px_rgba(212,160,23,0.9)] mb-10 select-none">
+                Dealt Hands
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                {% for player in players %}
+                <article class="bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-[#d4a017] rounded-3xl p-6 shadow-xl flex flex-col items-center">
+                    <h3 class="text-2xl font-bold mb-6 text-[#d4a017] select-none">{{ player.name }}'s Hand</h3>
+                    <div class="hand-of-cards flex justify-center gap-4">
+                        {% for card in player.cards %}
+                        <div class="card {{ card[1]|lower }} relative w-20 h-28 rounded-xl shadow-lg cursor-pointer transition-transform duration-500 hover:scale-110" style="animation: dealCard 0.6s ease-out; animation-delay: {{ loop.index0 * 0.15 }}s;">
                             <div class="card-back">S</div>
-                            <select name="player1_card{{i}}" class="hidden-select" required>
-                                <option value="">Select</option>
-                                {% for value in ['A','2','3','4','5','6','7','8','9','10','J','Q','K'] %}
-                                {% for suit in ['H','D','C','S'] %}
-                                <option value="{{value}}{{suit}}">{{value}}{{suit}}</option>
-                                {% endfor %}
-                                {% endfor %}
-                            </select>
+                            <div class="card-front">
+                                <span class="card-value absolute top-2 left-3 font-extrabold text-lg">{{ card[0] }}</span>
+                                <span class="card-suit absolute bottom-2 right-3 text-3xl">
+                                    {% if card[1] == 'H' %}<span class="text-[#c8102e]">♥</span>
+                                    {% elif card[1] == 'D' %}<span class="text-[#c8102e]">♦</span>
+                                    {% elif card[1] == 'C' %}<span class="text-black">♣</span>
+                                    {% else %}<span class="text-black">♠</span>{% endif %}
+                                </span>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
-                </div>
-                <!-- Player 2 -->
-                <div class="player-card">
-                    <h3>👤 Player 2</h3>
-                    <input type="text" name="player2_name" placeholder="Enter Name" required>
-                    <div class="hand-of-cards">
-                        {% for i in range(5) %}
-                        <div class="card-slot" data-player="2" data-slot="{{i}}">
-                            <div class="card-back">S</div>
-                            <select name="player2_card{{i}}" class="hidden-select" required>
-                                <option value="">Select</option>
-                                {% for value in ['A','2','3','4','5','6','7','8','9','10','J','Q','K'] %}
-                                {% for suit in ['H','D','C','S'] %}
-                                <option value="{{value}}{{suit}}">{{value}}{{suit}}</option>
-                                {% endfor %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="flex justify-center gap-6 mt-8">
-                <button id="add-player" class="btn-add-player">➕ Add Player (Max 4)</button>
-                <button type="submit" class="btn-submit">🎯 Calculate Winner</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card Selection Modal -->
-    <div id="card-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">×</span>
-            <h3 class="text-2xl font-bold text-gray-800 mb-4">Select a Card</h3>
-            <div class="card-choices">
-                {% for value in ['A','2','3','4','5','6','7','8','9','10','J','Q','K'] %}
-                {% for suit in ['H','D','C','S'] %}
-                <div class="card-option" data-value="{{value}}{{suit}}">
-                    <div class="card-preview {{suit|lower}}">
-                        <span class="card-value {% if suit in ['H','D'] %}text-red-600{% else %}text-black{% endif %}">{{value}}</span>
-                        <span class="card-suit">
-                            {% if suit == 'H' %}♥
-                            {% elif suit == 'D' %}♦
-                            {% elif suit == 'C' %}♣
-                            {% else %}♠{% endif %}
-                        </span>
-                    </div>
-                </div>
-                {% endfor %}
+                </article>
                 {% endfor %}
             </div>
-        </div>
+        </section>
+        {% endif %}
     </div>
-
     <script>
-        document.querySelectorAll('.card-slot').forEach(slot => {
-            slot.addEventListener('click', () => {
-                const player = slot.dataset.player;
-                const slotIndex = slot.dataset.slot;
-                const select = slot.querySelector('select');
-                const modal = document.getElementById('card-modal');
-                modal.style.display = 'flex';
+        const addPlayerBtn = document.getElementById('add-player');
+        let playerCount = 2;
 
-                document.querySelectorAll('.card-option').forEach(option => {
-                    option.addEventListener('click', () => {
-                        const value = option.dataset.value;
-                        select.value = value;
-                        const cardBack = slot.querySelector('.card-back');
-                        cardBack.classList.add('card-selected');
-                        cardBack.innerHTML = `
-                            <option class="card-value ${value.endsWith('H') || value.endsWith('D') ? 'text-red' : 'text-black'}">${value.slice(0, -1)}</option>
-                            <option class="card-suit">${value.endsWith('H') ? '♥' : value.endsWith('D') ? '♦' : value.endsWith('C') ? '♣' : '♠'}</option>
-                        `;
-                        modal.style.display = 'none';
-                    });
-                });
-            });
+        addPlayerBtn.addEventListener('click', () => {
+            if (playerCount < 4) {
+                playerCount++;
+                const playerCard = document.getElementById(`player${playerCount}-card`);
+                playerCard.classList.remove('hidden');
+                if (playerCount === 4) {
+                    addPlayerBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    addPlayerBtn.disabled = true;
+                }
+            }
         });
 
-        document.querySelector('.close-modal').addEventListener('click', () => {
-            document.getElementById('card-modal').style.display = 'none';
-        });
-
-        document.getElementById('add-player').addEventListener('click', () => {
-            const container = document.getElementById('players-container');
-            const playerCount = container.children.length;
-            if (playerCount >= 4) return;
-
-            const newPlayer = document.createElement('div');
-            newPlayer.classList.add('player-card');
-            newPlayer.innerHTML = `
-                <h3>👤 Player ${playerCount + 1}</h3>
-                <input type="text" name="player${playerCount + 1}_name" placeholder="Enter Name" required>
-                <div class="hand-of-cards flex gap-5 mt-3">
-                    ${Array.from({ length: 5 }, (_, i) => `
-                        <div class="card-slot" data-player="${playerCount + 1}" data-slot="${i}">
-                            <div class="card-back">S</div>
-                            <select name="player${playerCount + 1}_card${i}" class="hidden-select" required>
-                                <option value="">Select</option>
-                                ${['A','2','3','4','5','6','7','8','9','10','J','Q','K'].map(value =>
-                                    ['H','D','C','S'].map(suit => `<option value="${value}${suit}">${value}${suit}</option>`).join('')
-                                ).join('')}
-                            </select>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            container.appendChild(newPlayer);
-
-            newPlayer.querySelectorAll('.card-slot').forEach(slot => {
-                slot.addEventListener('click', () => {
-                    const player = slot.dataset.player;
-                    const slotIndex = slot.dataset.slot;
-                    const select = slot.querySelector('select');
-                    const modal = document.getElementById('card-modal');
-                    modal.style.display = 'flex';
-
-                    document.querySelectorAll('.card-option').forEach(option => {
-                        option.addEventListener('click', () => {
-                            const value = option.dataset.value;
-                            select.value = value;
-                            const cardBack = slot.querySelector('.card-back');
-                            cardBack.classList.add('card-selected');
-                            cardBack.innerHTML = `
-                                <span class="card-value ${value.endsWith('H') || value.endsWith('D') ? 'text-red-600' : 'text-black'}">${value.slice(0, -1)}</span>
-                                <span class="card-suit">${value.endsWith('H') ? '♥' : value.endsWith('D') ? '♦' : value.endsWith('C') ? '♣' : '♠'}</span>
-                            `;
-                            modal.style.display = 'none';
-                        });
-                    });
-                });
-            });
+        document.querySelectorAll('.card').forEach((card, index) => {
+            setTimeout(() => {
+                card.classList.add('flipped');
+            }, index * 200);
         });
     </script>
 </body>
 </html>
-{% endblock %}

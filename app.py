@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for
-from game_logic.game import determine_winners
+from flask import Flask, render_template, request, redirect, url_for, flash
+from game_logic.game import Game
 from game_logic.player import Player
 import os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  # Required for flash messages
+
+game = Game()  # Initialize Game instance to manage deck and state
 
 @app.route('/')
 def index():
@@ -14,37 +17,38 @@ def play():
     if request.method == 'POST':
         players = []
         
-        # Process each player
+        # Process player names
         for i in range(1, 5):  # Up to 4 players
             name = request.form.get(f'player{i}_name')
             if not name and i > 2:  # Players 3 and 4 are optional
                 continue
-            
-            # Collect all 5 cards for this player
-            cards = []
-            for card_num in range(5):
-                card = request.form.get(f'player{i}_card{card_num}')
-                if card:
-                    cards.append(card.upper())
-            
-            if len(cards) != 5:
-                flash(f'Player {i} must have exactly 5 cards', 'error')
+            if not name:
+                flash(f'Player {i} name is required', 'error')
                 return redirect(url_for('play'))
-            
-            players.append(Player(name.strip(), cards))
+            players.append(name.strip())
         
         if len(players) < 2:
             flash('At least 2 players are required', 'error')
             return redirect(url_for('play'))
         
-        # Check for duplicate cards
-        all_cards = [card for player in players for card in player.cards]
-        if len(all_cards) != len(set(all_cards)):
-            flash('Each card must be unique across all players', 'error')
-            return redirect(url_for('play'))
+        try:
+            # Deal cards to players using Game class
+            game.reset_round()  # Reset for a new round
+            game_players = game.deal_cards(players, cards_per_player=3)
+            
+            # Check for duplicate cards
+            all_cards = [card for player in game_players for card in player.cards]
+            if len(all_cards) != len(set(all_cards)):
+                flash('Each card must be unique across all players', 'error')
+                return redirect(url_for('play'))
+            
+            # Determine winners
+            winners = game.determine_winners()
+            return render_template('results.html', players=game_players, winners=winners)
         
-        winners = determine_winners(players)
-        return render_template('results.html', players=players, winners=winners)
+        except ValueError as e:
+            flash(str(e), 'error')
+            return redirect(url_for('play'))
     
     return render_template('play.html')
 
